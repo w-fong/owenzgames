@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Subway Driver NYC — Owenz Games</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23EE352E'/><text x='50' y='68' font-size='55' font-family='Helvetica' font-weight='bold' fill='white' text-anchor='middle'>1</text></svg>" />
+<script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+
+<div id="canvas-holder"></div>
+
+<!-- ======================= MENU ======================= -->
+<div id="menu" class="overlay">
+  <a class="home-link" href="../../index.html">← Owenz Games</a>
+  <h1 class="game-title">🚇 Subway Driver</h1>
+  <p class="tagline">Drive a real New York City subway train!</p>
+
+  <div class="menu-section">
+    <p class="menu-label">Pick your train</p>
+    <div class="line-cards">
+      <button class="line-card" data-line="1">
+        <span class="bullet huge" style="background:#EE352E">1</span>
+        <span class="line-name">1 Train</span>
+        <span class="line-desc">Broadway–7 Av Local</span>
+      </button>
+      <button class="line-card" data-line="R">
+        <span class="bullet huge dark" style="background:#FCCC0A">R</span>
+        <span class="line-name">R Train</span>
+        <span class="line-desc">Broadway Local</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <p class="menu-label">Which way?</p>
+    <div class="pill-row">
+      <button id="dir-fwd" class="pill"></button>
+      <button id="dir-rev" class="pill"></button>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <p class="menu-label">How long a trip?</p>
+    <div class="pill-row">
+      <button id="trip-short" class="pill"></button>
+      <button id="trip-full" class="pill"></button>
+    </div>
+  </div>
+
+  <button id="start">START! 🚆</button>
+  <p id="menu-best" class="menu-best"></p>
+</div>
+
+<!-- ======================= HUD ======================= -->
+<div id="hud" class="hidden">
+  <div class="topbar">
+    <span id="hud-bullet" class="bullet big">1</span>
+    <div class="nextstop-box">
+      <span class="nextstop-label">Next stop</span>
+      <span id="next-stop">—</span>
+      <span id="toward"></span>
+    </div>
+    <span id="speed">0 mph</span>
+  </div>
+
+  <div class="progress">
+    <div class="progress-track"><div id="progress-fill"></div></div>
+    <span id="progress-text"></span>
+  </div>
+
+  <div id="banner" class="hidden"></div>
+
+  <div id="stop-panel" class="hidden">
+    <div id="stop-msg"></div>
+    <div id="stars-burst"></div>
+    <div id="transfers"></div>
+    <div id="fact"></div>
+  </div>
+
+  <div class="corner-buttons">
+    <button id="btn-menu" class="round-btn" title="Back to menu">🏠</button>
+    <button id="btn-mute" class="round-btn" title="Sound on/off">🔊</button>
+    <button id="btn-voice" class="round-btn" title="Announcements on/off">🗣️</button>
+  </div>
+
+  <div class="controls">
+    <button id="stop" class="big-btn stop-btn"><span class="btn-icon">■</span>STOP</button>
+    <button id="go" class="big-btn go-btn"><span class="btn-icon">▶</span>GO</button>
+  </div>
+</div>
+
+<!-- ======================= END SCREEN ======================= -->
+<div id="end" class="overlay hidden">
+  <div id="confetti"></div>
+  <h1 id="end-title">You did it!</h1>
+  <p id="end-sub"></p>
+  <div id="end-stars" class="end-stars"></div>
+  <p id="end-rating"></p>
+  <p id="end-best"></p>
+  <div class="end-buttons">
+    <button id="again" class="cta">Drive again! 🔁</button>
+    <button id="pick-train" class="cta alt">Pick a train 🚇</button>
+  </div>
+</div>
+
+<noscript><p class="loadfail">This game needs JavaScript turned on.</p></noscript>
+<div id="loadfail" class="loadfail" hidden>
+  Hmm, the game couldn't load its 3D engine.<br />
+  Please check your internet connection and refresh the page.
+</div>
+
+<script type="module">
+  try {
+    await import('./game.js');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loadfail').hidden = false;
+  }
+</script>
+</body>
+</html>

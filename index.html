@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Owenz Games</title>
+<link rel="stylesheet" href="assets/site.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23FCCC0A'/><text x='50' y='68' font-size='55' font-family='Helvetica' font-weight='bold' fill='black' text-anchor='middle'>O</text></svg>" />
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-bullets">
+    <span class="bullet" style="background:#EE352E">O</span><span class="bullet" style="background:#FCCC0A; color:#111">W</span><span class="bullet" style="background:#0039A6">E</span><span class="bullet" style="background:#FF6319">N</span><span class="bullet" style="background:#00933C">Z</span>
+  </div>
+  <h1>Owenz Games</h1>
+  <p class="subtitle">Fun little games, made just for Owen 💛</p>
+</header>
+
+<main>
+  <a class="game-card" href="games/subway/index.html">
+    <div class="train-track">
+      <div class="mini-train">
+        <span class="mini-car front"><i class="mini-bullet one">1</i></span><span class="mini-car"></span><span class="mini-car"></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>🚇 Subway Driver NYC</h2>
+      <p>Drive the real <strong>1</strong> and <strong>R</strong> trains, stop at every real station, and earn a 5-star rating!</p>
+      <p class="best-line" id="best-stars"></p>
+      <span class="play-btn">PLAY ▶</span>
+    </div>
+  </a>
+
+  <div class="game-card soon">
+    <div class="card-body">
+      <h2>🚧 More games coming soon…</h2>
+      <p>Stand clear of the closing doors, please!</p>
+    </div>
+  </div>
+</main>
+
+<footer>Made with ❤️ for a young train conductor.</footer>
+
+<script>
+  // Show the best subway rating earned in the game, if any
+  (function () {
+    var best = Math.max(
+      parseFloat(localStorage.getItem('owenz_subway_best_1') || '0'),
+      parseFloat(localStorage.getItem('owenz_subway_best_R') || '0')
+    );
+    if (best > 0) {
+      var html = 'Best rating: ';
+      for (var i = 1; i <= 5; i++) {
+        html += '<span class="star ' + (best >= i ? 'full' : (best >= i - 0.5 ? 'half' : 'empty')) + '">★</span>';
+      }
+      document.getElementById('best-stars').innerHTML = html;
+    }
+  })();
+</script>
+</body>
+</html>
