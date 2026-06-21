@@ -223,6 +223,91 @@ function trainFrontTexture(line) {
   });
 }
 
+// R211 — modern car used on the A/C/E. Blue cab, wide blue stripe + gold accent, 4 wide doors/side.
+function r211SideTexture(lineColor) {
+  return canvasTexture(1024, 192, (g) => {
+    // stainless steel body
+    const grad = g.createLinearGradient(0, 0, 0, 192);
+    grad.addColorStop(0, '#d0d4d9'); grad.addColorStop(0.55, '#b8bdc4'); grad.addColorStop(1, '#979da5');
+    g.fillStyle = grad; g.fillRect(0, 0, 1024, 192);
+    // corrugation lines
+    g.strokeStyle = 'rgba(255,255,255,0.22)';
+    for (let y = 125; y < 190; y += 7) { g.beginPath(); g.moveTo(0, y); g.lineTo(1024, y); g.stroke(); }
+    // wide blue stripe near roof
+    g.fillStyle = lineColor; g.fillRect(0, 0, 1024, 28);
+    // gold accent line below stripe
+    g.fillStyle = '#f5c518'; g.fillRect(0, 28, 1024, 5);
+    // tall panoramic windows (higher, bigger than older cars)
+    const winY = 40, winH = 68;
+    const drawWindow = (x, w) => {
+      g.fillStyle = '#111820'; g.fillRect(x - 2, winY - 2, w + 4, winH + 4);
+      g.fillStyle = '#c8dff5'; g.fillRect(x, winY, w, winH); // lighter blue-tinted glass
+      if (Math.random() < 0.45) {
+        g.fillStyle = 'rgba(30,50,70,0.7)';
+        const px = x + 8 + Math.random() * (w - 28);
+        g.beginPath(); g.arc(px + 8, winY + 32, 9, 0, Math.PI * 2); g.fill();
+        g.fillRect(px, winY + 40, 16, 18);
+      }
+    };
+    // wider doors (58" vs 50") — 4 per side
+    const drawDoorsR211 = (x) => {
+      g.fillStyle = '#8a9098'; g.fillRect(x, 18, 110, 166);
+      g.strokeStyle = '#4a5058'; g.lineWidth = 2.5;
+      g.strokeRect(x, 18, 110, 166);
+      g.beginPath(); g.moveTo(x + 55, 18); g.lineTo(x + 55, 184); g.stroke();
+      // door window
+      g.fillStyle = '#111820'; g.fillRect(x + 8, 36, 42, 55); g.fillRect(x + 60, 36, 42, 55);
+      g.fillStyle = '#c8dff5'; g.fillRect(x + 10, 38, 40, 53); g.fillRect(x + 62, 38, 40, 53);
+      // green door indicator lights (top corners)
+      g.fillStyle = '#00d060';
+      g.fillRect(x + 4, 20, 8, 5); g.fillRect(x + 98, 20, 8, 5);
+    };
+    // layout: W D W D W D W D W  (4 doors, 5 window groups)
+    drawWindow(8, 72);
+    drawDoorsR211(92);
+    drawWindow(214, 75);
+    drawDoorsR211(301);
+    drawWindow(423, 75);
+    drawDoorsR211(510);
+    drawWindow(632, 75);
+    drawDoorsR211(719);
+    drawWindow(841, 70);
+  });
+}
+
+function r211FrontTexture(line) {
+  return canvasTexture(256, 256, (g) => {
+    // blue cab front — most distinctive R211 feature
+    g.fillStyle = line.color; g.fillRect(0, 0, 256, 256);
+    // lighter blue gradient to add depth
+    const grad = g.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, 'rgba(255,255,255,0.18)'); grad.addColorStop(1, 'rgba(0,0,0,0.3)');
+    g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
+    // wide panoramic windshield (taller, more rectangular than old cars)
+    g.fillStyle = '#0a0f14'; g.fillRect(14, 28, 228, 90);
+    g.fillStyle = '#1e3a50'; g.fillRect(20, 34, 100, 78); g.fillRect(136, 34, 100, 78);
+    // center divider pillar
+    g.fillStyle = line.color; g.fillRect(124, 28, 8, 90);
+    // LED bar headlights (horizontal strips, not circles)
+    g.fillStyle = '#fff9e0'; g.fillRect(18, 130, 70, 10); // left white bar
+    g.fillRect(168, 130, 70, 10);                          // right white bar
+    g.fillStyle = '#ff3333'; g.fillRect(30, 145, 46, 7);  // left red bar
+    g.fillRect(180, 145, 46, 7);                           // right red bar
+    // large LED route bullet display (center lower)
+    g.beginPath(); g.arc(128, 198, 40, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(0,0,0,0.55)'; g.fill();
+    g.beginPath(); g.arc(128, 198, 36, 0, Math.PI * 2);
+    g.fillStyle = line.color; g.fill();
+    // bright ring around bullet (LED glow effect)
+    g.strokeStyle = '#ffffff'; g.lineWidth = 3;
+    g.beginPath(); g.arc(128, 198, 37, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = line.darkText ? '#111' : '#fff';
+    g.font = 'bold 46px Helvetica, Arial, sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(line.id, 128, 201);
+  });
+}
+
 /* ============================== World building ============================== */
 
 let renderer, scene, camera, world = null;
@@ -300,13 +385,21 @@ function makePerson(rng) {
   return g;
 }
 
+// R211 trains (A/C/E) have a blue front; use darker charcoal roof to match
+const R211_LINES = new Set(['A', 'C', 'E']);
+
 function buildTrain(line) {
   const train = new THREE.Group();
-  const sideTex = trainSideTexture(line.color);
+  const isR211 = R211_LINES.has(line.id);
+  const sideTex = isR211 ? r211SideTexture(line.color) : trainSideTexture(line.color);
   const sideMat = new THREE.MeshLambertMaterial({ map: sideTex });
-  const frontMat = new THREE.MeshLambertMaterial({ map: trainFrontTexture(line) });
-  const roofMat = new THREE.MeshLambertMaterial({ color: 0x9b9fa6 });
-  const endMat = new THREE.MeshLambertMaterial({ color: 0x8e939a });
+  const frontMat = new THREE.MeshLambertMaterial({ map: isR211 ? r211FrontTexture(line) : trainFrontTexture(line) });
+  const roofMat = isR211
+    ? new THREE.MeshLambertMaterial({ color: 0x7a8088 })
+    : new THREE.MeshLambertMaterial({ color: 0x9b9fa6 });
+  const endMat = isR211
+    ? new THREE.MeshLambertMaterial({ color: line.color })  // R211 ends are painted line color
+    : new THREE.MeshLambertMaterial({ color: 0x8e939a });
   const bogieMat = new THREE.MeshLambertMaterial({ color: 0x16181c });
 
   for (let i = 0; i < NUM_CARS; i++) {
@@ -986,8 +1079,8 @@ function wireUI() {
 
   window.addEventListener('keydown', (e) => {
     if (e.repeat) return;
-    if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') { e.preventDefault(); pressGo(); }
-    if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); pressStop(); }
+    if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Enter') { e.preventDefault(); pressGo(); }
+    if (e.code === 'ArrowDown' || e.code === 'KeyS' || e.code === 'Space') { e.preventDefault(); pressStop(); }
   });
 
   $('btn-menu').addEventListener('click', () => { window.speechSynthesis?.cancel(); showMenu(); });
