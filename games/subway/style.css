@@ -17,6 +17,7 @@ html, body {
 }
 
 .hidden { display: none !important; }
+[hidden] { display: none !important; }
 
 /* ---------- route bullets ---------- */
 
